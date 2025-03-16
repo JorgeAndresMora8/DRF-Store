@@ -1,21 +1,22 @@
 from rest_framework import serializers
-from watchlist_app.models import Shoes, Category
+from watchlist_app.models import Shoes, Category, Review
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta: 
         model = Category
         exclude = ['id']
-        
+       
+class ReviewSerializer(serializers.ModelSerializer): 
+    class Meta: 
+        model = Review
+        exclude = ('shoes',)
         
 class ShoeSerializer(serializers.ModelSerializer):
     
     precio_con_iva = serializers.SerializerMethodField()
-    category = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='category-detail'
-    )
+    category = CategorySerializer()
+    reviews = ReviewSerializer(many=True, read_only=True)
     
     class Meta:
         model = Shoes
@@ -40,5 +41,4 @@ class ShoeSerializer(serializers.ModelSerializer):
                 'Name and Description should be different')
         return data
     
-
 
